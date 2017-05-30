@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 struct EntityIoValueType {
   uint32_t namespc;
@@ -12,7 +13,7 @@ class PropertyBase {
   EntityIoValueType valueType;
 };
 
-template<class R, class... Args>
+template<class R, typename... Args>
 class Method<R(Args...)> : public std::function<R(Args...)> {
 public:
   // TODO: forward std::function args
@@ -31,7 +32,7 @@ enum PropertyAccess {
   RW = 3,
 };
 
-template<typename T, std::string N, PropertyAccess A>
+template<std::string N, typename T, PropertyAccess A>
 class Property : public PropertyBase {
 public:
   // Could be changed to a T&& new value param
@@ -67,11 +68,32 @@ public:
 
 // TODO: synthetic properties (user get/set method)
 
+template<std::string N, typename... Args>
+class Signal {
+protected:
+  std::vector<std::function<void(Args...)>> m_listeners;
+
+public:
+  
+
+  template<typename... CallArgs>
+  void operator()(CallArgs&&... ca) {
+    for (auto fn : m_listeners) {
+      fn(std::forward<CallArgs>(ca)...);
+    }
+  }
+}
+
 // EXAMPLE
 
 class MyEntity : public virtual Entity {
 public:
-  Property<int, "health"> health(this);
-  Property<Vector4, "remainingInk"> remainingInk(this, Vector4(1, 2, 3, 4));
-  Method<void(int, int)> myMethod(this, &MyEntity::);
+  Property<"health", int> health(this);
+  Property<"remainingInk", Vector4> remainingInk(this, Vector4(1, 2, 3, 4));
+  Method<"myMethod", void(int, int)> myMethod(this, &MyEntity::myMethodImpl);
+  Signal<"signalr", int, int> signalr(this);
+
+  void myMethodImpl(int a, int b) {
+    signalr(a + 2, b - 4);
+  }
 };
