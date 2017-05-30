@@ -42,33 +42,40 @@ public:
   using ReadStdFuncPtr = std::function<std::remove_reference_t<T>&&(Entity&)>;
 
   // Could be changed to a T&& new value param
-  using WriteRawFuncPtr = std::remove_reference_t<T>&&(*)(Entity&, const T &newval);
-  using WriteStdFuncPtr = std::function<std::remove_reference_t<T>&&(Entity&, const T &newval)>;
+  using WriteRawFuncPtr = void(*)(Entity&, const T &newval);
+  using WriteStdFuncPtr = std::function<void(Entity&, const T &newval)>;
 
   using OnChangeRawFuncPtr = void(*)(Entity&, const T &newval);
   using OnChangeStdFuncPtr = std::function<void(Entity&, const T &newval)>;
 
 protected:
   const char *const m_name;
+  Entity *m_container;
   T *m_valuePtr;
   OnChangeStdFuncPtr m_onChange;
 
-public:
-  Property(const char *name, Entity *container, T *valuePtr, OnChangeStdFuncPtr onChange = {}) :
+  Property(const char *name, Entity *container) :
     m_name(name),
-    m_valuePtr(valuePtr),
-    m_onChange(onChange) {
+    m_container(container) {
     container->m_properties.emplace(std::piecewise_construct,
         std::forward_as_tuple(name),
         std::forward_as_tuple(this));
   }
 
-  operator const T&() {
+public:
+  Property(const char *name, Entity *container, T *valuePtr, OnChangeStdFuncPtr onChange = {}) :
+    Property(name, container) {
+    m_valuePtr = valuePtr;
+    m_onChange = onChange;
+  }
+
+  operator const T&() const {
     static_assert(A | PropertyAccess::R, "Property has no read access");
     return *m_valuePtr;
   }
 
-  const T& operator=(const T &v) {
+  template<typename C, typename = typename std::enable_if_t<std::is_convertible<C, T>::value>>
+  const T& operator=(const C &v) {
     static_assert(A | PropertyAccess::W, "Property has no write access");
     //if (m_onChange) {
     //  m_onChange(
@@ -76,7 +83,8 @@ public:
     *m_valuePtr = v;
     return *m_valuePtr;
   }
-  const T& operator=(const T &&v) {
+  template<typename C, typename = typename std::enable_if_t<std::is_convertible<C, T>::value>>
+  const T& operator=(T &&v) {
     static_assert(A | PropertyAccess::W, "Property has no write access");
     *m_valuePtr = std::move(v);
     return *m_valuePtr;
@@ -104,7 +112,7 @@ public:
   }
 
   template<typename... CallArgs>
-  R operator()(CallArgs&&... ca) {
+  R operator()(CallArgs&&... ca) const {
     return m_func(*m_container, std::forward<CallArgs>(ca)...);
   }
 };
@@ -131,7 +139,7 @@ public:
   }
 
   template<typename... CallArgs>
-  void operator()(CallArgs&&... ca) {
+  void operator()(CallArgs&&... ca) const {
     for (const Func &fn : m_listeners) {
       fn(*m_container, std::forward<CallArgs>(ca)...);
     }
@@ -166,7 +174,7 @@ public:
     m_health(1337),
     health("health", this, &m_health),
     remainingInk("remainingInk", this, &m_remainingInk),
-    myMethod("myMethod", this, &MyEntity::myMethodImpl),
+    myMethod("myMethod", this, &myMethodImpl),
     signalr("signalr", this) {
   }
 
@@ -180,14 +188,44 @@ public:
 #include <assert.h>
 #include <iostream>
 
+class CustomThingy {
+public:
+  int val;
+
+  CustomThingy(int v) :
+    val(v) {
+  }
+
+  operator int() const {
+    return val;
+  }
+};
+
 int main(int argc, char **argv) {
   (void) argc;
   (void) argv;
   MyEntity mayo;
 
+  // Initial value
   assert(mayo.health == 1337);
+
+  // Primitive same-type operator=
   mayo.health = 12;
   assert(mayo.health == 12);
+
+  // Implicit cast other-type lvalue operator=
+  CustomThingy ct(-237);
+  mayo.health = ct;
+  assert(mayo.health == -237);
+
+  // Implicit cast other-type rvalue operator=
+  mayo.health = CustomThingy(8);
+  assert(mayo.health == 8);
+
+  // Implicit cast other-type std::move'd operator=
+  mayo.health = std::move(CustomThingy(33));
+  assert(mayo.health == 33);
+
 
   mayo.signalr.addListener([](Entity&, int a, int b) {
     std::cout << a << ' ' << b << std::endl;
@@ -196,6 +234,7 @@ int main(int argc, char **argv) {
     std::cout << b << ' ' << a << std::endl;
   });
   mayo.signalr(12, 34);
+
 
   mayo.myMethod(0, 0);
 
