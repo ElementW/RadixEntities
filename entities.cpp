@@ -1,3 +1,4 @@
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -35,17 +36,25 @@ enum PropertyAccess {
 template<std::string N, typename T, PropertyAccess A>
 class Property : public PropertyBase {
 public:
+  // TODO: type-erased callbacks
+
+  using ReadRawFuncPtr = std::remove_reference_t<T>&&(*)(Entity&);
+  using ReadStdFuncPtr = std::function<std::remove_reference_t<T>&&(Entity&)>;
+
   // Could be changed to a T&& new value param
-  using OnChangeRawFuncPtr = void(*)(Entity*, const T &newval);
-  using OnChangeStdFuncPtr = std::function<void(Entity*, const T &newval)>;
+  using WriteRawFuncPtr = std::remove_reference_t<T>&&(*)(Entity&, const T &newval);
+  using WriteStdFuncPtr = std::function<std::remove_reference_t<T>&&(Entity&, const T &newval)>;
+
+  using OnChangeRawFuncPtr = void(*)(Entity&, const T &newval);
+  using OnChangeStdFuncPtr = std::function<void(Entity&, const T &newval)>;
 
 protected:
-  T m_value;
+  T *m_valuePtr;
   OnChangeStdFuncPtr m_onChange;
 
 public:
-  Property(Entity *container, const T &initval, OnChangeStdFuncPtr onChange) :
-    value(initval) {
+  Property(Entity *container, const T *valuePtr, OnChangeStdFuncPtr onChange) :
+    m_valuePtr(valuePtr) {
     container.m_properties.emplace_back(std::piecewise_construct,
         std::forward_as_tuple(N),
         std::forward_as_tuple(this));
@@ -53,16 +62,16 @@ public:
 
   operator const T&() {
     static_assert(A | PropertyAccess::R, "Property has no read access");
-    return m_value;
+    return *m_value;
   }
 
   operator=(const T &v) {
     static_assert(A | PropertyAccess::W, "Property has no write access");
-    m_value = v;
+    *m_value = v;
   }
   operator=(const T &&v) {
     static_assert(A | PropertyAccess::W, "Property has no write access");
-    m_value = std::move(v);
+    *m_value = std::move(v);
   }
 }
 
@@ -87,9 +96,13 @@ public:
 // EXAMPLE
 
 class MyEntity : public virtual Entity {
+protected:
+  int m_health;
+  Vector4 m_remainingInk(1, 2, 3, 4);
+
 public:
-  Property<"health", int> health(this);
-  Property<"remainingInk", Vector4> remainingInk(this, Vector4(1, 2, 3, 4));
+  Property<"health", int> health(this, &m_health);
+  Property<"remainingInk", Vector4> remainingInk(this, &m_remainingInk);
   Method<"myMethod", void(int, int)> myMethod(this, &MyEntity::myMethodImpl);
   Signal<"signalr", int, int> signalr(this);
 
