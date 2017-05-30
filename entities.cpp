@@ -56,7 +56,8 @@ protected:
 public:
   Property(const char *name, Entity *container, T *valuePtr, OnChangeStdFuncPtr onChange = {}) :
     m_name(name),
-    m_valuePtr(valuePtr) {
+    m_valuePtr(valuePtr),
+    m_onChange(onChange) {
     container->m_properties.emplace(std::piecewise_construct,
         std::forward_as_tuple(name),
         std::forward_as_tuple(this));
@@ -98,7 +99,8 @@ public:
   template<typename... CallArgs>
   Method(const char *name, Entity *container, CallArgs&&... ca) :
     m_func(std::forward<CallArgs>(ca)...),
-    m_name(name) {
+    m_name(name),
+    m_container(container) {
   }
 
   template<typename... CallArgs>
@@ -119,7 +121,8 @@ protected:
 
 public:
   Signal(const char *name, Entity *container) :
-    m_name(name) {
+    m_name(name),
+    m_container(container) {
   }
 
   // TODO make holder object to functions are automatically removed upon object death
@@ -144,11 +147,11 @@ struct Vector4 {
     x(x),
     y(y),
     z(z),
-    w(z) {
+    w(w) {
   }
 };
 
-class MyEntity : public virtual Entity {
+class MyEntity : public /*virtual*/ Entity {
 protected:
   int m_health;
   Vector4 m_remainingInk = Vector4(1, 2, 3, 4);
@@ -168,8 +171,9 @@ public:
   }
 
   static int myMethodImpl(Entity &ent, int a, int b) {
-    MyEntity &self = reinterpret_cast<MyEntity&>(ent);
+    MyEntity &self = static_cast<MyEntity&>(ent);
     self.signalr(a + 2, b - 4);
+    return 42;
   }
 };
 
@@ -185,10 +189,10 @@ int main(int argc, char **argv) {
   mayo.health = 12;
   assert(mayo.health == 12);
 
-  mayo.signalr.addListener([](Entity &ent, int a, int b) {
+  mayo.signalr.addListener([](Entity&, int a, int b) {
     std::cout << a << ' ' << b << std::endl;
   });
-  mayo.signalr.addListener([](Entity &ent, int a, int b) {
+  mayo.signalr.addListener([](Entity&, int a, int b) {
     std::cout << b << ' ' << a << std::endl;
   });
   mayo.signalr(12, 34);
