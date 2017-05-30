@@ -129,7 +129,7 @@ public:
 
   template<typename... CallArgs>
   void operator()(CallArgs&&... ca) {
-    for (auto fn : m_listeners) {
+    for (const Func &fn : m_listeners) {
       fn(*m_container, std::forward<CallArgs>(ca)...);
     }
   }
