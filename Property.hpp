@@ -3,8 +3,6 @@
 
 #include <functional>
 
-#include "op_type_traits"
-
 class Entity;
 
 
@@ -58,16 +56,16 @@ public:
     m_onChange = onChange;
   }
 
-  operator const T&() const {
+  const T& operator*() const {
     static_assert(A | PropertyAccess::R, "Property has no read access");
     return *m_valuePtr;
   }
 
-  template<typename C, typename = ei<can_op_eq<const T&, C>>>
-  op_eq_type<const T&, C> operator==(C o) const {
-    return *m_valuePtr == o;
+  const T* operator->() const {
+    static_assert(A | PropertyAccess::R, "Property has no read access");
+    return m_valuePtr;
   }
-  // TODO: other operators
+
 
   template<typename C, typename = ei<std::is_convertible<C, T>>>
   const T& operator=(const C &v) {
@@ -78,6 +76,7 @@ public:
     *m_valuePtr = v;
     return *m_valuePtr;
   }
+
   template<typename C, typename = ei<std::is_convertible<C, T>>>
   const T& operator=(T &&v) {
     static_assert(A | PropertyAccess::W, "Property has no write access");

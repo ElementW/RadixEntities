@@ -70,31 +70,31 @@ void testPrimitiveAssign() {
     MyEntity mayo;
 
     // Initial value
-    assert(mayo.health == 1337);
+    assert(*mayo.health == 1337);
 
     // Primitive same-type operator=
     mayo.health = 12;
-    assert(mayo.health == 12);
+    assert(*mayo.health == 12);
 
     // Implicit cast other-type lvalue operator=
     CustomThingy ct(-237);
     mayo.health = ct;
-    assert(mayo.health == -237);
+    assert(*mayo.health == -237);
 
     // Implicit cast other-type rvalue operator=
     mayo.health = CustomThingy(8);
-    assert(mayo.health == 8);
+    assert(*mayo.health == 8);
 
     // Implicit cast other-type std::move'd operator=
     mayo.health = std::move(CustomThingy(33));
-    assert(mayo.health == 33);
+    assert(*mayo.health == 33);
 }
 
 void testClassCompareOperators() {
     MyEntity mayo;
     Vector4 test(1, 2, 3, 4), test2(2, 2, 3, 4);
 
-    assert(mayo.remainingInk == test);
+    assert(*mayo.remainingInk == test);
     //assert(mayo.remainingInk == "test");
     //assert(mayo.remainingInk != test2);
 }
