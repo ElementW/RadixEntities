@@ -40,4 +40,4 @@ public:
   }
 };
 
-#endif /* SIGNAL_H */
+#endif /* SIGNAL_HPP */

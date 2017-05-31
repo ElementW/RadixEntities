@@ -87,4 +87,4 @@ public:
 
 // TODO: synthetic properties (user get/set method)
 
-#endif /* PROPERTY_H */
+#endif /* PROPERTY_HPP */

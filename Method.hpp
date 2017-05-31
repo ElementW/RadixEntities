@@ -63,4 +63,4 @@ public:
   }
 };
 
-#endif /* METHOD_H */
+#endif /* METHOD_HPP */

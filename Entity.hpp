@@ -25,4 +25,4 @@ public:
   Entity& operator=(Entity&&) = delete;
 };
 
-#endif /* ENTITY_H */
+#endif /* ENTITY_HPP */
