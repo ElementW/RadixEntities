@@ -3,6 +3,8 @@
 
 #include <functional>
 
+#include "op_type_traits"
+
 class Entity;
 
 
@@ -46,6 +48,9 @@ protected:
   T *m_valuePtr;
   OnChangeStdFuncPtr m_onChange;
 
+  template<typename V>
+  using ei = std::enable_if_t<V::value>;
+
 public:
   Property(const char *name, Entity *container, T *valuePtr, OnChangeStdFuncPtr onChange = {}) :
     PropertyBase(name, container) {
@@ -58,16 +63,22 @@ public:
     return *m_valuePtr;
   }
 
-  template<typename C, typename = typename std::enable_if_t<std::is_convertible<C, T>::value>>
+  template<typename C, typename = ei<can_op_eq<const T&, C>>>
+  op_eq_type<const T&, C> operator==(C o) const {
+    return *m_valuePtr == o;
+  }
+  // TODO: other operators
+
+  template<typename C, typename = ei<std::is_convertible<C, T>>>
   const T& operator=(const C &v) {
     static_assert(A | PropertyAccess::W, "Property has no write access");
     //if (m_onChange) {
-    //  m_onChange(
+    //  m_onChange(*container, TODO);
     //}
     *m_valuePtr = v;
     return *m_valuePtr;
   }
-  template<typename C, typename = typename std::enable_if_t<std::is_convertible<C, T>::value>>
+  template<typename C, typename = ei<std::is_convertible<C, T>>>
   const T& operator=(T &&v) {
     static_assert(A | PropertyAccess::W, "Property has no write access");
     *m_valuePtr = std::move(v);

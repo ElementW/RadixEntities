@@ -1,0 +1,19 @@
+#ifndef OP_TYPE_TRAITS
+#define OP_TYPE_TRAITS
+
+#include <type_traits>
+
+template<class ...> using void_t = void;
+
+
+template<typename L, typename R>
+using op_eq_type = decltype(std::declval<L>() == std::declval<R>());
+
+template<typename L, typename R, class = void>
+struct can_op_eq : std::false_type {};
+
+template<typename L, typename R>
+struct can_op_eq<L,R,void_t<op_eq_type<L,R>>> : std::true_type{};
+
+
+#endif /* OP_TYPE_TRAITS */

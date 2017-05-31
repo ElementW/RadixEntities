@@ -6,8 +6,9 @@
 #include "Property.hpp"
 
 class Entity {
-//protected:
-public:
+protected:
+  friend class PropertyBase;
+
   std::unordered_map<std::string, PropertyBase*> m_properties;
 };
 
