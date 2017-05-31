@@ -6,9 +6,16 @@
 
 class Entity;
 
+class SignalBase {
+protected:
+  const char *const m_name;
+  Entity *m_container;
+
+  SignalBase(const char *name, Entity *container);
+};
 
 template<typename... Args>
-class Signal {
+class Signal : public SignalBase {
 public:
   using Func = std::function<void(Entity&, Args...)>;
 
@@ -19,8 +26,7 @@ protected:
 
 public:
   Signal(const char *name, Entity *container) :
-    m_name(name),
-    m_container(container) {
+    SignalBase(name, container) {
   }
 
   // TODO make holder object to functions are automatically removed upon object death

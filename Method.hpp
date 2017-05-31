@@ -5,23 +5,27 @@
 
 class Entity;
 
+class MethodBase {
+protected:
+  const char *const m_name;
+  Entity *m_container;
+
+  MethodBase(const char *name, Entity *container);
+};
 
 template<class R, typename... Args>
 class Method {};
 
 template<class R, typename... Args>
-class Method<R(Args...)> {
+class Method<R(Args...)> : public MethodBase {
 protected:
   std::function<R(Entity&, Args...)> m_func;
-  const char *const m_name;
-  Entity *m_container;
 
 public:
   template<typename... CallArgs>
   Method(const char *name, Entity *container, CallArgs&&... ca) :
-    m_func(std::forward<CallArgs>(ca)...),
-    m_name(name),
-    m_container(container) {
+    MethodBase(name, container) {
+    m_func = decltype(m_func)(std::forward<CallArgs>(ca)...);
   }
 
   template<typename... CallArgs>
