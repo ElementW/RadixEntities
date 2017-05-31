@@ -16,6 +16,13 @@ protected:
   std::unordered_map<std::string, MethodBase*> m_methods;
   std::unordered_map<std::string, PropertyBase*> m_properties;
   std::unordered_map<std::string, SignalBase*> m_signals;
+
+public:
+  Entity() {}
+  virtual ~Entity();
+
+  Entity(Entity&&) = delete;
+  Entity& operator=(Entity&&) = delete;
 };
 
 #endif /* ENTITY_H */

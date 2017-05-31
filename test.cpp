@@ -4,7 +4,7 @@
 #include "Method.hpp"
 #include "Property.hpp"
 #include "Signal.hpp"
-
+using namespace std::placeholders;
 struct Vector4 {
   double x, y, z, w;
 
@@ -24,7 +24,7 @@ struct Vector4 {
   }
 };
 
-class MyEntity : public /*virtual*/ Entity {
+class MyEntity : public virtual Entity {
 protected:
   int m_health;
   Vector4 m_remainingInk = Vector4(1, 2, 3, 4);
@@ -36,16 +36,19 @@ public:
   Signal<int, int> signalr;
 
   MyEntity() :
+    Entity(),
     m_health(1337),
     health("health", this, &m_health),
     remainingInk("remainingInk", this, &m_remainingInk),
-    myMethod("myMethod", this, &myMethodImpl),
+    myMethod("myMethod", this, &MyEntity::myMethodImpl, _1, _2),
     signalr("signalr", this) {
   }
 
-  static int myMethodImpl(Entity &ent, int a, int b) {
-    MyEntity &self = static_cast<MyEntity&>(ent);
-    self.signalr(a + 2, b - 4);
+  ~MyEntity() {
+  }
+
+  int myMethodImpl(int a, int b) {
+    signalr(a + 2, b - 4);
     return 42;
   }
 };

@@ -18,19 +18,46 @@ class Method {};
 
 template<class R, typename... Args>
 class Method<R(Args...)> : public MethodBase {
+public:
+  using Func = std::function<R(Entity&, Args...)>;
+  using Thisfunc = std::function<R(Args...)>;
+
 protected:
-  std::function<R(Entity&, Args...)> m_func;
+  union {
+    Func m_func;
+    Thisfunc m_thisfunc;
+  };
+  bool m_isThisfunc;
 
 public:
+  template<typename E, typename... CallArgs,
+           typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type>
+  Method(const char *name, E *container, R(E::*func)(Args...), CallArgs&&... ca) :
+    MethodBase(name, container),
+    m_thisfunc(std::bind(func, container, std::forward<CallArgs>(ca)...)),
+    m_isThisfunc(true) {
+  }
+
   template<typename... CallArgs>
   Method(const char *name, Entity *container, CallArgs&&... ca) :
-    MethodBase(name, container) {
-    m_func = decltype(m_func)(std::forward<CallArgs>(ca)...);
+    MethodBase(name, container),
+    m_func(std::forward<CallArgs>(ca)...),
+    m_isThisfunc(false) {
+  }
+
+  ~Method() {
+    if (m_isThisfunc) {
+      m_thisfunc.~Thisfunc();
+    } else {
+      m_func.~Func();
+    }
   }
 
   template<typename... CallArgs>
   R operator()(CallArgs&&... ca) const {
-    return m_func(*m_container, std::forward<CallArgs>(ca)...);
+    return m_isThisfunc ?
+        m_thisfunc(std::forward<CallArgs>(ca)...) :
+        m_func(*m_container, std::forward<CallArgs>(ca)...);
   }
 };
 
