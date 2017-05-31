@@ -18,6 +18,9 @@ struct Vector4 {
   bool operator==(const Vector4 &o) const {
     return x == o.x && y == o.y && z == o.z && w == o.w;
   }
+  bool operator!=(const Vector4 &o) const {
+    return !operator==(o);
+  }
 
   operator double() const {
     return std::sqrt(x*x + y*y + z*z + w*w);
@@ -75,9 +78,23 @@ void testPrimitiveAssign() {
     // Initial value
     assert(*mayo.health == 1337);
 
-    // Primitive same-type operator=
+    // Primitive same-type lvalue operator=
+    int newHealth = -888;
+    mayo.health = newHealth;
+    assert(*mayo.health == -888);
+
+    // Primitive same-type rvalue operator=
     mayo.health = 12;
     assert(*mayo.health == 12);
+
+    // Primitive other-type lvalue operator=
+    short newHealth2 = -212;
+    mayo.health = newHealth2;
+    assert(*mayo.health == -212);
+
+    // Primitive other-type rvalue operator=
+    mayo.health = static_cast<short>(31415);
+    assert(*mayo.health == 31415);
 
     // Implicit cast other-type lvalue operator=
     CustomThingy ct(-237);
@@ -98,8 +115,7 @@ void testClassCompareOperators() {
     Vector4 test(1, 2, 3, 4), test2(2, 2, 3, 4);
 
     assert(*mayo.remainingInk == test);
-    //assert(mayo.remainingInk == "test");
-    //assert(mayo.remainingInk != test2);
+    assert(*mayo.remainingInk != test2);
 }
 
 int main(int argc, char **argv) {

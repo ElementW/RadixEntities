@@ -9,3 +9,6 @@ test: Entity.o Property.o Signal.o Method.o test.o
 	$(CXX) $(CPPFLAGS) -o $@ $^
 
 all: test
+
+clean:
+	rm *.o test
