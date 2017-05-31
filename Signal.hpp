@@ -21,8 +21,6 @@ public:
 
 protected:
   std::vector<Func> m_listeners;
-  const char *const m_name;
-  Entity *m_container;
 
 public:
   Signal(const char *name, Entity *container) :
