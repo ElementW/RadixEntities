@@ -3,6 +3,8 @@
 
 #include <functional>
 
+#include "easy_bind"
+
 class Entity;
 
 class MethodBase {
@@ -34,7 +36,7 @@ public:
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type>
   Method(const char *name, E *container, R(E::*func)(Args...), CallArgs&&... ca) :
     MethodBase(name, container),
-    m_thisfunc(std::bind(func, container, std::forward<CallArgs>(ca)...)),
+    m_thisfunc(easy_bind(func, container, std::forward<CallArgs>(ca)...)),
     m_isThisfunc(true) {
   }
 

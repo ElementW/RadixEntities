@@ -4,7 +4,7 @@
 #include "Method.hpp"
 #include "Property.hpp"
 #include "Signal.hpp"
-using namespace std::placeholders;
+
 struct Vector4 {
   double x, y, z, w;
 
@@ -43,7 +43,7 @@ public:
     m_health(1337),
     health("health", this, &m_health),
     remainingInk("remainingInk", this, &m_remainingInk),
-    myMethod("myMethod", this, &MyEntity::myMethodImpl, _1, _2),
+    myMethod("myMethod", this, &MyEntity::myMethodImpl),
     signalr("signalr", this) {
   }
 
