@@ -151,10 +151,13 @@ int main(int argc, char **argv) {
 
   MyEntity mayo;
 
-  mayo.signalr.addListener([](Entity&, int a, int b) {
+  mayo.signalr.addListener<Entity>([](Entity&, int a, int b) {
     std::cout << a << ' ' << b << std::endl;
   });
-  mayo.signalr.addListener([](Entity&, int a, int b) {
+  mayo.signalr.addListener<MyEntity>([](MyEntity&, int a, int b) {
+    std::cout << a << ' ' << b << std::endl;
+  });
+  mayo.signalr.addListener([](int a, int b) {
     std::cout << b << ' ' << a << std::endl;
   });
   mayo.signalr(12, 34);

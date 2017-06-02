@@ -2,6 +2,7 @@
 #define METHOD_HPP
 
 #include <functional>
+#include <type_traits>
 
 #include "easy_bind"
 
@@ -43,7 +44,7 @@ public:
    *  and possibly some of its arguments.
    * Non-specified arguments are substituted with placeholders of their position.
    */
-  template<typename E, typename D, typename... CallArgs,
+  template<typename D, typename E, typename... CallArgs,
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type,
            typename = typename std::enable_if<std::is_base_of<std::decay_t<D>, E>::value>::type>
   Method(const char *name, E *container, std::function<R(D&, Args...)> func, CallArgs&&... ca) :
@@ -59,15 +60,13 @@ public:
    *     [...]
    *     void myMethodImpl(MyEntity &self, int a) {}
    */
-  template<typename E, typename D, typename... CallArgs,
+  template<typename D, typename E, typename... CallArgs,
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type,
            typename = typename std::enable_if<std::is_base_of<std::decay_t<D>, E>::value>::type>
   Method(const char *name, E *container, R(*func)(D&, Args...), CallArgs&&... ca) :
     MethodBase(name, container),
     m_func(easy_bind(
         std::function<R(D&, Args...)>(func), std::ref(*container), std::forward<CallArgs>(ca)...)) {
-    // TODO: figure out why an explicit std::function construction is required, and since
-    //       it is the same problem, why this constructor overload also is.
   }
 
   template<typename... CallArgs>
