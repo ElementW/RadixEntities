@@ -28,76 +28,22 @@ struct Vector4 {
   }
 };
 
-class MyEntity : public virtual Entity {
-protected:
-  int m_health;
-  Vector4 m_remainingInk = Vector4(1, 2, 3, 4);
-
-public:
-  Property<int, PropertyAccess::RW> health;
-  Property<Vector4, PropertyAccess::R> remainingInk;
-  Method<int(int, int)> myMethod, myMethod2, myMethod3, myMethod4;
-  Signal<int, int> signalr;
-
-  MyEntity() :
-    Entity(),
-    m_health(1337),
-    health("health", this, &m_health),
-    remainingInk("remainingInk", this, &m_remainingInk),
-    myMethod("myMethod", this, &MyEntity::myMethodImpl),
-    myMethod2("myMethod2", this, &myMethod2Impl),
-    myMethod3("myMethod3", this, &myMethod3Impl),
-    myMethod4("myMethod4", this, &myMethod4Impl),
-    signalr("signalr", this) {
-  }
-
-  ~MyEntity() {
-  }
-
-  int myMethodImpl(int a, int b) {
-    signalr(a + 2, b - 4);
-    return 42;
-  }
-
-  static int myMethod2Impl(Entity &self, int a, int b) {
-    (void) a;
-    (void) b;
-    std::cout << "Hello I'm method2 " << std::addressof(self) << std::endl;
-    return 42*42;
-  }
-
-  static int myMethod3Impl(MyEntity &self, int a, int b) {
-    (void) a;
-    (void) b;
-    std::cout << "Hello I'm method3 " << std::addressof(self) << std::endl;
-    return 42*42;
-  }
-
-  static int myMethod4Impl(const MyEntity &self, int a, int b) {
-    (void) a;
-    (void) b;
-    std::cout << "Hello I'm method4 with const " << std::addressof(self) << std::endl;
-    return 42*42;
-  }
-};
-
 #include <assert.h>
 
-class CustomThingy {
-public:
-  int val;
-
-  CustomThingy(int v) :
-    val(v) {
-  }
-
-  operator int() const {
-    return val;
-  }
-};
-
 void testPrimitiveAssign() {
-  MyEntity mayo;
+  class MyEntity : public virtual Entity {
+  protected:
+    int m_health;
+  public:
+    Property<int, PropertyAccess::RW> health;
+    MyEntity() :
+      Entity(),
+      m_health(1337),
+      health("health", this, &m_health) {
+    }
+    ~MyEntity() {
+    }
+  } mayo;
 
   // Initial value
   assert(*mayo.health == 1337);
@@ -120,6 +66,17 @@ void testPrimitiveAssign() {
   mayo.health = static_cast<short>(31415);
   assert(*mayo.health == 31415);
 
+  class CustomThingy {
+  public:
+    int val;
+    CustomThingy(int v) :
+      val(v) {
+    }
+    operator int() const {
+      return val;
+    }
+  };
+
   // Implicit cast other-type lvalue operator=
   CustomThingy ct(-237);
   mayo.health = ct;
@@ -135,11 +92,99 @@ void testPrimitiveAssign() {
 }
 
 void testClassCompareOperators() {
-  MyEntity mayo;
+  class MyEntity : public virtual Entity {
+  protected:
+    Vector4 m_remainingInk = Vector4(1, 2, 3, 4);
+  public:
+    Property<Vector4, PropertyAccess::R> remainingInk;
+    MyEntity() :
+      Entity(),
+      remainingInk("remainingInk", this, &m_remainingInk) {
+    }
+    ~MyEntity() {
+    }
+  } mayo;
   Vector4 test(1, 2, 3, 4), test2(2, 2, 3, 4);
 
   assert(*mayo.remainingInk == test);
   assert(*mayo.remainingInk != test2);
+}
+
+void testSignals() {
+  class MyEntity : public virtual Entity {
+  public:
+    int aField;
+    Signal<int, int> signalr;
+    MyEntity() :
+      Entity(),
+      aField(6543),
+      signalr("signalr", this) {
+    }
+    ~MyEntity() {
+    }
+  } mayo;
+
+  mayo.signalr.addListener<Entity>([](Entity &e, int a, int b) {
+    assert(a == 12);
+    assert(b == 34);
+    MyEntity *pe = dynamic_cast<MyEntity*>(&e);
+    assert(pe != nullptr);
+    assert(pe->aField == 6543);
+  });
+  mayo.signalr.addListener<MyEntity>([](MyEntity &e, int a, int b) {
+    assert(a == 12);
+    assert(b == 34);
+    assert(e.aField == 6543);
+  });
+  mayo.signalr.addListener([](int a, int b) {
+    assert(a == 12);
+    assert(b == 34);
+  });
+  mayo.signalr(12, 34);
+}
+
+void testMethod() {
+  class MyEntity : public virtual Entity {
+  public:
+    Method<int(int, int)> myMethod, myMethod2, myMethod3, myMethod4;
+    MyEntity() :
+      Entity(),
+      myMethod("myMethod", this, &MyEntity::myMethodImpl),
+      myMethod2("myMethod2", this, &myMethod2Impl),
+      myMethod3("myMethod3", this, &myMethod3Impl),
+      myMethod4("myMethod4", this, &myMethod4Impl) {
+    }
+    ~MyEntity() {
+    }
+    int myMethodImpl(int a, int b) {
+      assert(a == 731);
+      assert(b == -472);
+      return 42;
+    }
+    static int myMethod2Impl(Entity &self, int a, int b) {
+      assert(a == 0);
+      assert(b == 1);
+      std::cout << "Hello I'm method2 " << std::addressof(self) << std::endl;
+      return 42*42;
+    }
+    static int myMethod3Impl(MyEntity &self, int a, int b) {
+      assert(a == 0);
+      assert(b == 1);
+      std::cout << "Hello I'm method3 " << std::addressof(self) << std::endl;
+      return 42*42*42;
+    }
+    static int myMethod4Impl(const MyEntity &self, int a, int b) {
+      assert(a == 0);
+      assert(b == 1);
+      std::cout << "Hello I'm method4 with const " << std::addressof(self) << std::endl;
+      return 42*42*42*42;
+    }
+  } mayo;
+
+  assert(mayo.myMethod(731, -472) == 42);
+  assert(mayo.myMethod2(0, 1) == 42*42);
+  assert(mayo.myMethod3(0, 1) == 42*42*42);
+  assert(mayo.myMethod4(0, 1) == 42*42*42*42);
 }
 
 int main(int argc, char **argv) {
@@ -148,25 +193,8 @@ int main(int argc, char **argv) {
 
   testPrimitiveAssign();
   testClassCompareOperators();
-
-  MyEntity mayo;
-
-  mayo.signalr.addListener<Entity>([](Entity&, int a, int b) {
-    std::cout << a << ' ' << b << std::endl;
-  });
-  mayo.signalr.addListener<MyEntity>([](MyEntity&, int a, int b) {
-    std::cout << a << ' ' << b << std::endl;
-  });
-  mayo.signalr.addListener([](int a, int b) {
-    std::cout << b << ' ' << a << std::endl;
-  });
-  mayo.signalr(12, 34);
-
-
-  mayo.myMethod(0, 0);
-  mayo.myMethod2(0, 0);
-  mayo.myMethod3(0, 0);
-  mayo.myMethod4(0, 0);
+  testSignals();
+  testMethod();
 
   return 0;
 }
