@@ -5,12 +5,6 @@
 
 class Entity;
 
-
-struct EntityIoValueType {
-  uint32_t namespc;
-  uint32_t type;
-};
-
 class PropertyBase {
 protected:
   EntityIoValueType valueType;
