@@ -1,11 +1,13 @@
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+#ifndef RADIXENTITIES_ENTITY_HPP
+#define RADIXENTITIES_ENTITY_HPP
 
 #include <unordered_map>
 
 #include "Method.hpp"
 #include "Property.hpp"
 #include "Signal.hpp"
+
+namespace RadixEntities {
 
 class Entity {
 protected:
@@ -25,4 +27,6 @@ public:
   Entity& operator=(Entity&&) = delete;
 };
 
-#endif /* ENTITY_HPP */
+} /* namespace RadixEntities */
+
+#endif /* RADIXENTITIES_ENTITY_HPP */

@@ -1,11 +1,12 @@
 #include <cmath>
 #include <iostream>
 
-#include "Entity.hpp"
-#include "Method.hpp"
-#include "Property.hpp"
-#include "Signal.hpp"
+#include "../Entity.hpp"
+#include "../Method.hpp"
+#include "../Property.hpp"
+#include "../Signal.hpp"
 
+#if 0
 struct Vector4 {
   double x, y, z, w;
 
@@ -186,15 +187,21 @@ void testMethod() {
   assert(mayo.myMethod3(0, 1) == 42*42*42);
   assert(mayo.myMethod4(0, 1) == 42*42*42*42);
 }
+#endif
+
+#include "../iotypes/ValueType.hpp"
 
 int main(int argc, char **argv) {
   (void) argc;
   (void) argv;
 
-  testPrimitiveAssign();
+  RadixEntities::iotypes::ValueType vt = RadixEntities::iotypes::getValueType<uint8_t>();
+  std::cout << vt.str() << std::endl;
+
+  /*testPrimitiveAssign();
   testClassCompareOperators();
   testSignals();
-  testMethod();
+  testMethod();*/
 
   return 0;
 }

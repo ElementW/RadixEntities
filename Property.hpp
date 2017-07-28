@@ -1,13 +1,17 @@
-#ifndef PROPERTY_HPP
-#define PROPERTY_HPP
+#ifndef RADIXENTITIES_PROPERTY_HPP
+#define RADIXENTITIES_PROPERTY_HPP
 
 #include <functional>
+
+#include "iotypes/ValueType.hpp"
+
+namespace RadixEntities {
 
 class Entity;
 
 class PropertyBase {
 protected:
-  EntityIoValueType valueType;
+  iotypes::ValueType valueType;
 
   const char *const m_name;
   Entity *m_container;
@@ -51,19 +55,19 @@ public:
   }
 
   const T& operator*() const {
-    static_assert(A | PropertyAccess::R, "Property has no read access");
+    static_assert(A & PropertyAccess::R, "Property has no read access");
     return *m_valuePtr;
   }
 
   const T* operator->() const {
-    static_assert(A | PropertyAccess::R, "Property has no read access");
+    static_assert(A & PropertyAccess::R, "Property has no read access");
     return m_valuePtr;
   }
 
 
   template<typename C, typename = ei<std::is_convertible<C, T>>>
   const T& operator=(const C &v) {
-    static_assert(A | PropertyAccess::W, "Property has no write access");
+    static_assert(A & PropertyAccess::W, "Property has no write access");
     //if (m_onChange) {
     //  m_onChange(*container, TODO);
     //}
@@ -73,7 +77,7 @@ public:
 
   template<typename C, typename = ei<std::is_convertible<C, T>>>
   const T& operator=(T &&v) {
-    static_assert(A | PropertyAccess::W, "Property has no write access");
+    static_assert(A & PropertyAccess::W, "Property has no write access");
     *m_valuePtr = std::move(v);
     return *m_valuePtr;
   }
@@ -81,4 +85,6 @@ public:
 
 // TODO: synthetic properties (user get/set method)
 
-#endif /* PROPERTY_HPP */
+} /* namespace RadixEntities */
+
+#endif /* RADIXENTITIES_PROPERTY_HPP */

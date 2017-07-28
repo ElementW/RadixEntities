@@ -1,9 +1,11 @@
-#ifndef SIGNAL_HPP
-#define SIGNAL_HPP
+#ifndef RADIXENTITIES_SIGNAL_HPP
+#define RADIXENTITIES_SIGNAL_HPP
 
 #include <functional>
 #include <type_traits>
 #include <vector>
+
+namespace RadixEntities {
 
 class Entity;
 
@@ -47,4 +49,6 @@ public:
   }
 };
 
-#endif /* SIGNAL_HPP */
+} /* namespace RadixEntities */
+
+#endif /* RADIXENTITIES_SIGNAL_HPP */

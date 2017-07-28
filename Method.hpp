@@ -1,10 +1,12 @@
-#ifndef METHOD_HPP
-#define METHOD_HPP
+#ifndef RADIXENTITIES_METHOD_HPP
+#define RADIXENTITIES_METHOD_HPP
 
 #include <functional>
 #include <type_traits>
 
-#include "easy_bind"
+#include "util/easy_bind"
+
+namespace RadixEntities {
 
 class Entity;
 
@@ -81,4 +83,6 @@ public:
   }
 };
 
-#endif /* METHOD_HPP */
+} /* namespace RadixEntities */
+
+#endif /* RADIXENTITIES_METHOD_HPP */
