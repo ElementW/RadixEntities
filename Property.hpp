@@ -2,6 +2,8 @@
 #define RADIXENTITIES_PROPERTY_HPP
 
 #include <functional>
+#include <string>
+#include <utility>
 
 #include "iotypes/ValueType.hpp"
 
@@ -9,20 +11,36 @@ namespace RadixEntities {
 
 class Entity;
 
-class PropertyBase {
-protected:
-  iotypes::ValueType valueType;
-
-  const char *const m_name;
-  Entity *m_container;
-
-  PropertyBase(const char *name, Entity *container);
-};
-
 enum PropertyAccess {
   R = 1,
   W = 2,
   RW = 3,
+};
+
+class PropertyBase {
+protected:
+  const std::string m_name;
+  Entity *const m_container;
+  const iotypes::ValueType m_valueType;
+  const PropertyAccess m_access;
+
+  PropertyBase(std::string &&name, Entity *container, const iotypes::ValueType &valueType,
+               PropertyAccess access);
+
+public:
+  const std::string& name() const {
+    return m_name;
+  }
+  Entity* container() const {
+    return m_container;
+  }
+  iotypes::ValueType valueType() const {
+    return m_valueType;
+  }
+  PropertyAccess access() const {
+    return m_access;
+  }
+  std::string str() const;
 };
 
 template<typename T, PropertyAccess A>
@@ -40,6 +58,8 @@ public:
   using OnChangeRawFuncPtr = void(*)(Entity&, const T &newval);
   using OnChangeStdFuncPtr = std::function<void(Entity&, const T &newval)>;
 
+  constexpr iotypes::ValueType valueType() const { return iotypes::getValueType<T>(); }
+
 protected:
   T *m_valuePtr;
   OnChangeStdFuncPtr m_onChange;
@@ -48,8 +68,8 @@ protected:
   using ei = std::enable_if_t<V::value>;
 
 public:
-  Property(const char *name, Entity *container, T *valuePtr, OnChangeStdFuncPtr onChange = {}) :
-    PropertyBase(name, container) {
+  Property(std::string &&name, Entity *container, T *valuePtr, OnChangeStdFuncPtr onChange = {}) :
+    PropertyBase(std::move(name), container, valueType(), A) {
     m_valuePtr = valuePtr;
     m_onChange = onChange;
   }

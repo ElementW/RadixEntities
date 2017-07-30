@@ -7,6 +7,8 @@ Property.hpp
 Signal.cpp
 Signal.hpp
 iotypes/ValueHint.hpp
+iotypes/ValueType.cpp
 iotypes/ValueType.hpp
 test/test.cpp
+util/ParamTypes.hpp
 util/easy_bind

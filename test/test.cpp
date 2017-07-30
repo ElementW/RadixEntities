@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cmath>
 #include <iostream>
 
@@ -5,8 +6,10 @@
 #include "../Method.hpp"
 #include "../Property.hpp"
 #include "../Signal.hpp"
+#include "../iotypes/ValueType.hpp"
 
-#if 0
+using namespace RadixEntities;
+
 struct Vector4 {
   double x, y, z, w;
 
@@ -28,8 +31,6 @@ struct Vector4 {
     return std::sqrt(x*x + y*y + z*z + w*w);
   }
 };
-
-#include <assert.h>
 
 void testPrimitiveAssign() {
   class MyEntity : public virtual Entity {
@@ -109,6 +110,8 @@ void testClassCompareOperators() {
 
   assert(*mayo.remainingInk == test);
   assert(*mayo.remainingInk != test2);
+
+  std::cout << mayo.remainingInk.str() << std::endl;
 }
 
 void testSignals() {
@@ -142,11 +145,17 @@ void testSignals() {
     assert(b == 34);
   });
   mayo.signalr(12, 34);
+  std::cout << mayo.signalr.str() << std::endl;
 }
 
 void testMethod() {
   class MyEntity : public virtual Entity {
+  private:
+    int bogaloo = 999'999;
+
   public:
+    uint electric = 0xDEADBEEF;
+
     Method<int(int, int)> myMethod, myMethod2, myMethod3, myMethod4;
     MyEntity() :
       Entity(),
@@ -158,6 +167,7 @@ void testMethod() {
     ~MyEntity() {
     }
     int myMethodImpl(int a, int b) {
+      assert(bogaloo == 999'999);
       assert(a == 731);
       assert(b == -472);
       return 42;
@@ -165,18 +175,23 @@ void testMethod() {
     static int myMethod2Impl(Entity &self, int a, int b) {
       assert(a == 0);
       assert(b == 1);
+      assert(dynamic_cast<MyEntity&>(self).electric == 0xDEADBEEF);
+      dynamic_cast<MyEntity&>(self).electric = 0xBADF00D;
       std::cout << "Hello I'm method2 " << std::addressof(self) << std::endl;
       return 42*42;
     }
     static int myMethod3Impl(MyEntity &self, int a, int b) {
       assert(a == 0);
       assert(b == 1);
+      assert(self.electric == 0xBADF00D);
+      self.electric = 0xC0FFEE;
       std::cout << "Hello I'm method3 " << std::addressof(self) << std::endl;
       return 42*42*42;
     }
     static int myMethod4Impl(const MyEntity &self, int a, int b) {
       assert(a == 0);
       assert(b == 1);
+      assert(self.electric == 0xC0FFEE);
       std::cout << "Hello I'm method4 with const " << std::addressof(self) << std::endl;
       return 42*42*42*42;
     }
@@ -186,22 +201,64 @@ void testMethod() {
   assert(mayo.myMethod2(0, 1) == 42*42);
   assert(mayo.myMethod3(0, 1) == 42*42*42);
   assert(mayo.myMethod4(0, 1) == 42*42*42*42);
-}
-#endif
 
-#include "../iotypes/ValueType.hpp"
+  std::cout << mayo.myMethod.str() << std::endl;
+}
+
+void testIotypesFourcc() {
+  using namespace RadixEntities::iotypes;
+  assert((invfourcc(fourcc('a', 'b', 'c', 'd')) == std::array<char, 4>{ 'a', 'b', 'c', 'd' }));
+  assert((invfourcc(fourcc("efgh")) == std::array<char, 4>{ 'e', 'f', 'g', 'h' }));
+  assert((invfourcc(fourcc("ij")) == std::array<char, 4>{ 'i', 'j', '\0', '\0' }));
+  assert(strfourcc(fourcc('a', 'b', 'c', 'd')) == "abcd");
+  assert(strfourcc(fourcc("efgh")) == "efgh");
+  assert(strfourcc(fourcc("ij")) == "ij");
+}
+
+void testIotypesValueType() {
+  using namespace RadixEntities::iotypes;
+  assert(getValueType<uint8_t>() == ValueType("std", "u8"));
+  assert(getValueType<int32_t*>() == ValueType("std", "i32", ValueType::Pointer));
+  assert(getValueType<const bool*>() == ValueType("std", "bool", ValueType::Pointer | ValueType::Const));
+}
+
+using VT = RadixEntities::iotypes::ValueType;
+template<>
+constexpr VT RadixEntities::iotypes::getBaseValueType<Vector4>() { return { "test", "vec4" }; }
+void testIotypesReflection() {
+  using namespace RadixEntities::iotypes;
+  class MyEntity : public virtual Entity {
+  protected:
+    int m_health;
+    Vector4 m_remainingInk = Vector4(1, 2, 3, 4);
+  public:
+    Property<Vector4, PropertyAccess::R> remainingInk;
+    Property<int, PropertyAccess::RW> health;
+    MyEntity() :
+      Entity(),
+      m_health(1337),
+      remainingInk("remainingInk", this, &m_remainingInk),
+      health("health", this, &m_health) {
+    }
+    ~MyEntity() {
+    }
+  } mayo;
+  assert((mayo.remainingInk.valueType() == VT{ "test", "vec4" }));
+  assert(mayo.health.valueType() == getValueType<int>());
+}
 
 int main(int argc, char **argv) {
   (void) argc;
   (void) argv;
 
-  RadixEntities::iotypes::ValueType vt = RadixEntities::iotypes::getValueType<uint8_t>();
-  std::cout << vt.str() << std::endl;
+  testIotypesFourcc();
+  testIotypesValueType();
+  testIotypesReflection();
 
-  /*testPrimitiveAssign();
+  testPrimitiveAssign();
   testClassCompareOperators();
   testSignals();
-  testMethod();*/
+  testMethod();
 
   return 0;
 }

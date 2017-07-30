@@ -2,8 +2,13 @@
 #define RADIXENTITIES_SIGNAL_HPP
 
 #include <functional>
+#include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
+
+#include "iotypes/ValueType.hpp"
+#include "util/ParamTypes.hpp"
 
 namespace RadixEntities {
 
@@ -11,10 +16,23 @@ class Entity;
 
 class SignalBase {
 protected:
-  const char *const m_name;
-  Entity *m_container;
+  const std::string m_name;
+  Entity *const m_container;
+  const std::vector<iotypes::ValueType> m_paramTypes;
 
-  SignalBase(const char *name, Entity *container);
+  SignalBase(std::string &&name, Entity *container, std::vector<iotypes::ValueType> &&paramTypes);
+
+public:
+  const std::string& name() const {
+    return m_name;
+  }
+  Entity* container() const {
+    return m_container;
+  }
+  const std::vector<iotypes::ValueType>& paramTypes() const {
+    return m_paramTypes;
+  }
+  std::string str() const;
 };
 
 template<typename... Args>
@@ -26,8 +44,8 @@ protected:
   std::vector<Func> m_listeners;
 
 public:
-  Signal(const char *name, Entity *container) :
-    SignalBase(name, container) {
+  Signal(std::string &&name, Entity *container) :
+    SignalBase(std::move(name), container, getParamTypes<Args...>()) {
   }
 
   template<typename E,

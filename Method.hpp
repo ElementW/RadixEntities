@@ -3,8 +3,10 @@
 
 #include <functional>
 #include <type_traits>
+#include <utility>
 
 #include "util/easy_bind"
+#include "util/ParamTypes.hpp"
 
 namespace RadixEntities {
 
@@ -12,10 +14,23 @@ class Entity;
 
 class MethodBase {
 protected:
-  const char *const m_name;
-  Entity *m_container;
+  const std::string m_name;
+  Entity *const m_container;
+  const std::vector<iotypes::ValueType> m_paramTypes;
 
-  MethodBase(const char *name, Entity *container);
+  MethodBase(std::string &&name, Entity *container, std::vector<iotypes::ValueType> &&paramTypes);
+
+public:
+  const std::string& name() const {
+    return m_name;
+  }
+  Entity* container() const {
+    return m_container;
+  }
+  const std::vector<iotypes::ValueType>& paramTypes() const {
+    return m_paramTypes;
+  }
+  std::string str() const;
 };
 
 template<class R, typename... Args>
@@ -37,8 +52,8 @@ public:
    */
   template<typename E, typename... CallArgs,
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type>
-  Method(const char *name, E *container, R(E::*func)(Args...), CallArgs&&... ca) :
-    MethodBase(name, container),
+  Method(std::string &&name, E *container, R(E::*func)(Args...), CallArgs&&... ca) :
+    MethodBase(std::move(name), container, getParamTypes<Args...>()),
     m_func(easy_bind(func, container, std::forward<CallArgs>(ca)...)) {
   }
 
@@ -49,8 +64,8 @@ public:
   template<typename D, typename E, typename... CallArgs,
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type,
            typename = typename std::enable_if<std::is_base_of<std::decay_t<D>, E>::value>::type>
-  Method(const char *name, E *container, std::function<R(D&, Args...)> func, CallArgs&&... ca) :
-    MethodBase(name, container),
+  Method(std::string &&name, E *container, std::function<R(D&, Args...)> func, CallArgs&&... ca) :
+    MethodBase(std::move(name), container, getParamTypes<Args...>()),
     m_func(easy_bind(func, std::ref(*container), std::forward<CallArgs>(ca)...)) {
   }
 
@@ -65,15 +80,15 @@ public:
   template<typename D, typename E, typename... CallArgs,
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type,
            typename = typename std::enable_if<std::is_base_of<std::decay_t<D>, E>::value>::type>
-  Method(const char *name, E *container, R(*func)(D&, Args...), CallArgs&&... ca) :
-    MethodBase(name, container),
+  Method(std::string &&name, E *container, R(*func)(D&, Args...), CallArgs&&... ca) :
+    MethodBase(std::move(name), container, getParamTypes<Args...>()),
     m_func(easy_bind(
         std::function<R(D&, Args...)>(func), std::ref(*container), std::forward<CallArgs>(ca)...)) {
   }
 
   template<typename... CallArgs>
-  Method(const char *name, Entity *container, CallArgs&&... ca) :
-    MethodBase(name, container),
+  Method(std::string &&name, Entity *container, CallArgs&&... ca) :
+    MethodBase(std::move(name), container, getParamTypes<Args...>()),
     m_func(std::forward<CallArgs>(ca)...) {
   }
 
