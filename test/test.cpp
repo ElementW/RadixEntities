@@ -2,11 +2,11 @@
 #include <cmath>
 #include <iostream>
 
-#include "../Entity.hpp"
-#include "../Method.hpp"
-#include "../Property.hpp"
-#include "../Signal.hpp"
-#include "../iotypes/ValueType.hpp"
+#include <RadixEntities/Entity.hpp>
+#include <RadixEntities/Method.hpp>
+#include <RadixEntities/Property.hpp>
+#include <RadixEntities/Signal.hpp>
+#include <RadixEntities/iotypes/ValueType.hpp>
 
 using namespace RadixEntities;
 

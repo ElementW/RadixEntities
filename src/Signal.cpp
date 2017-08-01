@@ -1,21 +1,21 @@
-#include "Method.hpp"
+#include <RadixEntities/Signal.hpp>
 
-#include "Entity.hpp"
+#include <RadixEntities/Entity.hpp>
 
 namespace RadixEntities {
 
-MethodBase::MethodBase(std::string &&name, Entity *container,
+SignalBase::SignalBase(std::string &&name, Entity *container,
     std::vector<iotypes::ValueType> &&paramTypes) :
   m_name(std::move(name)),
   m_container(container),
   m_paramTypes(std::move(paramTypes)) {
-  container->m_methods.emplace(std::piecewise_construct,
+  container->m_signals.emplace(std::piecewise_construct,
       std::forward_as_tuple(name),
       std::forward_as_tuple(this));
 }
 
-std::string MethodBase::str() const {
-  std::string ret = m_name + '(';
+std::string SignalBase::str() const {
+  std::string ret = m_name + "!(";
   bool first = true;
   for (const iotypes::ValueType &vt : m_paramTypes) {
     if (first) {

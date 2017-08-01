@@ -1,13 +1,15 @@
 .PHONY: all
 
-CPPFLAGS += -std=c++14 -Wall -Wextra
+CPPFLAGS += -std=c++14 -Wall -Wextra -I../include
 CPPFLAGS += -g
 
 LDFLAGS += -fPIC -pie
 CPPFLAGS += -fPIC -pie
 
-SRCS := ../iotypes/ValueType.cpp ../Entity.cpp ../Property.cpp ../Signal.cpp ../Method.cpp test.cpp
+SRCS := ../src/iotypes/ValueType.cpp ../src/Entity.cpp ../src/Property.cpp ../src/Signal.cpp ../src/Method.cpp test.cpp
 OBJS := $(SRCS:.cpp=.o)
+
+all: test
 
 depend: .depend
 
@@ -22,8 +24,6 @@ include .depend
 
 test: $(OBJS)
 	$(CXX) $(LDFLAGS) -o $@ $^
-
-all: test
 
 clean:
 	rm $(OBJS) test

@@ -1,4 +1,4 @@
-#include "Entity.hpp"
+#include <RadixEntities/Entity.hpp>
 
 namespace RadixEntities {
 

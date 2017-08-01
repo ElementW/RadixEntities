@@ -1,6 +1,6 @@
-#include "Property.hpp"
+#include <RadixEntities/Property.hpp>
 
-#include "Entity.hpp"
+#include <RadixEntities/Entity.hpp>
 
 namespace RadixEntities {
 
