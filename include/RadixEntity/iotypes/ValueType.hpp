@@ -11,6 +11,10 @@ namespace radix {
 namespace entity {
 namespace iotypes {
 
+constexpr char u32toc(uint32_t i, int o) {
+  return static_cast<char>((i >> o) & 0xFF);
+}
+
 constexpr uint32_t fourcc(const char *p) {
   uint32_t r = 0;
   for (int i = 0; i < 4 && p[i] != 0; ++i) {
@@ -23,8 +27,8 @@ constexpr uint32_t fourcc(char a, char b, char c, char d) {
   // (a << 24) | (b << 16) | (c << 8) | d;
 }
 constexpr std::array<char, 4> invfourcc(uint32_t i) {
-  const char *p = reinterpret_cast<const char*>(&i);
-  return { p[0], p[1], p[2], p[3] };
+  return { u32toc(i, 0), u32toc(i, 8), u32toc(i, 16), u32toc(i, 24) };
+  // { u32toc(i, 24), u32toc(i, 16), u32toc(i, 8), u32toc(i, 0) };
 }
 static inline std::string strfourcc(uint32_t i) {
   char s[5] = {};
