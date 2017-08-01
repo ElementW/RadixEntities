@@ -10,9 +10,11 @@ MethodBase::MethodBase(std::string &&name, Entity *container,
   m_name(std::move(name)),
   m_container(container),
   m_paramTypes(std::move(paramTypes)) {
-  container->m_methods.emplace(std::piecewise_construct,
-      std::forward_as_tuple(name),
-      std::forward_as_tuple(this));
+  if (container) {
+    container->m_methods.emplace(std::piecewise_construct,
+        std::forward_as_tuple(name),
+        std::forward_as_tuple(this));
+  }
 }
 
 std::string MethodBase::str() const {

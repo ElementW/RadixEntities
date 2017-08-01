@@ -11,9 +11,11 @@ PropertyBase::PropertyBase(std::string &&name, Entity *container,
   m_container(container),
   m_valueType(valueType),
   m_access(access) {
-  container->m_properties.emplace(std::piecewise_construct,
-      std::forward_as_tuple(name),
-      std::forward_as_tuple(this));
+  if (container) {
+    container->m_properties.emplace(std::piecewise_construct,
+        std::forward_as_tuple(name),
+        std::forward_as_tuple(this));
+  }
 }
 
 std::string PropertyBase::str() const {

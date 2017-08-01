@@ -10,9 +10,11 @@ SignalBase::SignalBase(std::string &&name, Entity *container,
   m_name(std::move(name)),
   m_container(container),
   m_paramTypes(std::move(paramTypes)) {
-  container->m_signals.emplace(std::piecewise_construct,
-      std::forward_as_tuple(name),
-      std::forward_as_tuple(this));
+  if (container) {
+    container->m_signals.emplace(std::piecewise_construct,
+        std::forward_as_tuple(name),
+        std::forward_as_tuple(this));
+  }
 }
 
 std::string SignalBase::str() const {
