@@ -140,7 +140,7 @@ iotype( int64_t, "std", "i64")
 iotype(float, "std", "f32")
 iotype(double, "std", "f64")
 iotype(std::string, "std", "st8")
-iotype(std::u32string, "std0", "st32")
+iotype(std::u32string, "std", "st32")
 #undef iotype
 
 } /* namespace iotypes */
