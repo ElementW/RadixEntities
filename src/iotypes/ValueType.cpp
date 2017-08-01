@@ -1,6 +1,7 @@
-#include <RadixEntities/iotypes/ValueType.hpp>
+#include <RadixEntity/iotypes/ValueType.hpp>
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 namespace iotypes {
 
 std::string ValueType::str() const {
@@ -19,4 +20,5 @@ std::string ValueType::str() const {
 }
 
 } /* namespace iotypes */
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */

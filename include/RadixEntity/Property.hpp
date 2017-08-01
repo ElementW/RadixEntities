@@ -1,5 +1,5 @@
-#ifndef RADIXENTITIES_PROPERTY_HPP
-#define RADIXENTITIES_PROPERTY_HPP
+#ifndef RADIXENTITY_PROPERTY_HPP
+#define RADIXENTITY_PROPERTY_HPP
 
 #include <functional>
 #include <string>
@@ -7,7 +7,8 @@
 
 #include "iotypes/ValueType.hpp"
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 class Entity;
 
@@ -105,6 +106,7 @@ public:
 
 // TODO: synthetic properties (user get/set method)
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */
 
-#endif /* RADIXENTITIES_PROPERTY_HPP */
+#endif /* RADIXENTITY_PROPERTY_HPP */

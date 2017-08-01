@@ -1,5 +1,5 @@
-#ifndef RADIXENTITIES_ENTITY_HPP
-#define RADIXENTITIES_ENTITY_HPP
+#ifndef RADIXENTITY_ENTITY_HPP
+#define RADIXENTITY_ENTITY_HPP
 
 #include <unordered_map>
 
@@ -7,7 +7,8 @@
 #include "Property.hpp"
 #include "Signal.hpp"
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 class Entity {
 protected:
@@ -27,6 +28,7 @@ public:
   Entity& operator=(Entity&&) = delete;
 };
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */
 
-#endif /* RADIXENTITIES_ENTITY_HPP */
+#endif /* RADIXENTITY_ENTITY_HPP */

@@ -1,12 +1,13 @@
-#ifndef RADIXENTITIES_UTIL_PARAM_TYPES_HPP
-#define RADIXENTITIES_UTIL_PARAM_TYPES_HPP
+#ifndef RADIXENTITY_UTIL_PARAM_TYPES_HPP
+#define RADIXENTITY_UTIL_PARAM_TYPES_HPP
 
 #include <type_traits>
 #include <vector>
 
 #include "../iotypes/ValueType.hpp"
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 namespace detail {
 
@@ -30,6 +31,7 @@ std::vector<iotypes::ValueType> getParamTypes() {
   return vec;
 }
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */
 
-#endif /* RADIXENTITIES_UTIL_PARAM_TYPES_HPP */
+#endif /* RADIXENTITY_UTIL_PARAM_TYPES_HPP */

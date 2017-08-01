@@ -1,11 +1,12 @@
-#ifndef RADIXENTITIES_IOTYPES_VALUE_HINT_HPP
-#define RADIXENTITIES_IOTYPES_VALUE_HINT_HPP
+#ifndef RADIXENTITY_IOTYPES_VALUE_HINT_HPP
+#define RADIXENTITY_IOTYPES_VALUE_HINT_HPP
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 namespace iotypes {
 
 struct ValueHint {
@@ -32,6 +33,7 @@ struct ValueHintVector : public ValueHint {
 };
 
 } /* namespace iotypes */
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */
 
-#endif /* RADIXENTITIES_IOTYPES_VALUE_HINT_HPP */
+#endif /* RADIXENTITY_IOTYPES_VALUE_HINT_HPP */

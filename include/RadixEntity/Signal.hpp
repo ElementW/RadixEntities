@@ -1,5 +1,5 @@
-#ifndef RADIXENTITIES_SIGNAL_HPP
-#define RADIXENTITIES_SIGNAL_HPP
+#ifndef RADIXENTITY_SIGNAL_HPP
+#define RADIXENTITY_SIGNAL_HPP
 
 #include <functional>
 #include <string>
@@ -10,7 +10,8 @@
 #include "iotypes/ValueType.hpp"
 #include "util/ParamTypes.hpp"
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 class Entity;
 
@@ -67,6 +68,7 @@ public:
   }
 };
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */
 
-#endif /* RADIXENTITIES_SIGNAL_HPP */
+#endif /* RADIXENTITY_SIGNAL_HPP */

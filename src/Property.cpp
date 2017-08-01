@@ -1,8 +1,9 @@
-#include <RadixEntities/Property.hpp>
+#include <RadixEntity/Property.hpp>
 
-#include <RadixEntities/Entity.hpp>
+#include <RadixEntity/Entity.hpp>
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 PropertyBase::PropertyBase(std::string &&name, Entity *container,
     const iotypes::ValueType &valueType, PropertyAccess access) :
@@ -19,4 +20,5 @@ std::string PropertyBase::str() const {
   return m_valueType.str() + ' ' + m_name;
 }
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */

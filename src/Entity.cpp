@@ -1,8 +1,10 @@
-#include <RadixEntities/Entity.hpp>
+#include <RadixEntity/Entity.hpp>
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 Entity::~Entity() {
 }
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */

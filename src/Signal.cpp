@@ -1,8 +1,9 @@
-#include <RadixEntities/Signal.hpp>
+#include <RadixEntity/Signal.hpp>
 
-#include <RadixEntities/Entity.hpp>
+#include <RadixEntity/Entity.hpp>
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 SignalBase::SignalBase(std::string &&name, Entity *container,
     std::vector<iotypes::ValueType> &&paramTypes) :
@@ -29,4 +30,5 @@ std::string SignalBase::str() const {
   return ret;
 }
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */

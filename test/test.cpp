@@ -2,13 +2,13 @@
 #include <cmath>
 #include <iostream>
 
-#include <RadixEntities/Entity.hpp>
-#include <RadixEntities/Method.hpp>
-#include <RadixEntities/Property.hpp>
-#include <RadixEntities/Signal.hpp>
-#include <RadixEntities/iotypes/ValueType.hpp>
+#include <RadixEntity/Entity.hpp>
+#include <RadixEntity/Method.hpp>
+#include <RadixEntity/Property.hpp>
+#include <RadixEntity/Signal.hpp>
+#include <RadixEntity/iotypes/ValueType.hpp>
 
-using namespace RadixEntities;
+using namespace radix::entity;
 
 struct Vector4 {
   double x, y, z, w;
@@ -206,7 +206,7 @@ void testMethod() {
 }
 
 void testIotypesFourcc() {
-  using namespace RadixEntities::iotypes;
+  using namespace radix::entity::iotypes;
   assert((invfourcc(fourcc('a', 'b', 'c', 'd')) == std::array<char, 4>{ 'a', 'b', 'c', 'd' }));
   assert((invfourcc(fourcc("efgh")) == std::array<char, 4>{ 'e', 'f', 'g', 'h' }));
   assert((invfourcc(fourcc("ij")) == std::array<char, 4>{ 'i', 'j', '\0', '\0' }));
@@ -216,17 +216,17 @@ void testIotypesFourcc() {
 }
 
 void testIotypesValueType() {
-  using namespace RadixEntities::iotypes;
+  using namespace radix::entity::iotypes;
   assert(getValueType<uint8_t>() == ValueType("std", "u8"));
   assert(getValueType<int32_t*>() == ValueType("std", "i32", ValueType::Pointer));
   assert(getValueType<const bool*>() == ValueType("std", "bool", ValueType::Pointer | ValueType::Const));
 }
 
-using VT = RadixEntities::iotypes::ValueType;
+using VT = radix::entity::iotypes::ValueType;
 template<>
-constexpr VT RadixEntities::iotypes::getBaseValueType<Vector4>() { return { "test", "vec4" }; }
+constexpr VT radix::entity::iotypes::getBaseValueType<Vector4>() { return { "test", "vec4" }; }
 void testIotypesReflection() {
-  using namespace RadixEntities::iotypes;
+  using namespace radix::entity::iotypes;
   class MyEntity : public virtual Entity {
   protected:
     int m_health;

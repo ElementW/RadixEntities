@@ -1,8 +1,9 @@
-#include <RadixEntities/Method.hpp>
+#include <RadixEntity/Method.hpp>
 
-#include <RadixEntities/Entity.hpp>
+#include <RadixEntity/Entity.hpp>
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 MethodBase::MethodBase(std::string &&name, Entity *container,
     std::vector<iotypes::ValueType> &&paramTypes) :
@@ -29,4 +30,5 @@ std::string MethodBase::str() const {
   return ret;
 }
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */

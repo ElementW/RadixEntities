@@ -1,5 +1,5 @@
-#ifndef RADIXENTITIES_IOTYPES_VALUE_TYPE_HPP
-#define RADIXENTITIES_IOTYPES_VALUE_TYPE_HPP
+#ifndef RADIXENTITY_IOTYPES_VALUE_TYPE_HPP
+#define RADIXENTITY_IOTYPES_VALUE_TYPE_HPP
 
 #include <array>
 #include <cstdint>
@@ -7,7 +7,8 @@
 #include <string>
 #include <type_traits>
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 namespace iotypes {
 
 constexpr uint32_t fourcc(const char *p) {
@@ -139,6 +140,7 @@ iotype(std::u32string, "std0", "st32")
 #undef iotype
 
 } /* namespace iotypes */
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */
 
-#endif /* RADIXENTITIES_IOTYPES_VALUE_TYPE_HPP */
+#endif /* RADIXENTITY_IOTYPES_VALUE_TYPE_HPP */

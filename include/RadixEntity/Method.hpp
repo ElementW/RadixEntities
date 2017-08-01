@@ -1,5 +1,5 @@
-#ifndef RADIXENTITIES_METHOD_HPP
-#define RADIXENTITIES_METHOD_HPP
+#ifndef RADIXENTITY_METHOD_HPP
+#define RADIXENTITY_METHOD_HPP
 
 #include <functional>
 #include <type_traits>
@@ -8,7 +8,8 @@
 #include "util/easy_bind"
 #include "util/ParamTypes.hpp"
 
-namespace RadixEntities {
+namespace radix {
+namespace entity {
 
 class Entity;
 
@@ -98,6 +99,7 @@ public:
   }
 };
 
-} /* namespace RadixEntities */
+} /* namespace entity */
+} /* namespace radix */
 
-#endif /* RADIXENTITIES_METHOD_HPP */
+#endif /* RADIXENTITY_METHOD_HPP */
