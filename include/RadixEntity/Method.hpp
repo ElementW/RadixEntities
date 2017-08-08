@@ -17,9 +17,11 @@ class MethodBase {
 protected:
   const std::string m_name;
   Entity *const m_container;
+  const iotypes::ValueType m_returnType;
   const std::vector<iotypes::ValueType> m_paramTypes;
 
-  MethodBase(std::string &&name, Entity *container, std::vector<iotypes::ValueType> &&paramTypes);
+  MethodBase(std::string &&name, Entity *container, iotypes::ValueType returnType,
+             std::vector<iotypes::ValueType> &&paramTypes);
 
 public:
   const std::string& name() const {
@@ -54,7 +56,7 @@ public:
   template<typename E, typename... CallArgs,
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type>
   Method(std::string &&name, E *container, R(E::*func)(Args...), CallArgs&&... ca) :
-    MethodBase(std::move(name), container, getParamTypes<Args...>()),
+    MethodBase(std::move(name), container, iotypes::getValueType<R>(), getParamTypes<Args...>()),
     m_func(easy_bind(func, container, std::forward<CallArgs>(ca)...)) {
   }
 
@@ -66,7 +68,7 @@ public:
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type,
            typename = typename std::enable_if<std::is_base_of<std::decay_t<D>, E>::value>::type>
   Method(std::string &&name, E *container, std::function<R(D&, Args...)> func, CallArgs&&... ca) :
-    MethodBase(std::move(name), container, getParamTypes<Args...>()),
+    MethodBase(std::move(name), container, iotypes::getValueType<R>(), getParamTypes<Args...>()),
     m_func(easy_bind(func, std::ref(*container), std::forward<CallArgs>(ca)...)) {
   }
 
@@ -82,14 +84,14 @@ public:
            typename = typename std::enable_if<std::is_base_of<Entity, E>::value>::type,
            typename = typename std::enable_if<std::is_base_of<std::decay_t<D>, E>::value>::type>
   Method(std::string &&name, E *container, R(*func)(D&, Args...), CallArgs&&... ca) :
-    MethodBase(std::move(name), container, getParamTypes<Args...>()),
+    MethodBase(std::move(name), container, iotypes::getValueType<R>(), getParamTypes<Args...>()),
     m_func(easy_bind(
         std::function<R(D&, Args...)>(func), std::ref(*container), std::forward<CallArgs>(ca)...)) {
   }
 
   template<typename... CallArgs>
   Method(std::string &&name, Entity *container, CallArgs&&... ca) :
-    MethodBase(std::move(name), container, getParamTypes<Args...>()),
+    MethodBase(std::move(name), container, iotypes::getValueType<R>(), getParamTypes<Args...>()),
     m_func(std::forward<CallArgs>(ca)...) {
   }
 

@@ -5,10 +5,11 @@
 namespace radix {
 namespace entity {
 
-MethodBase::MethodBase(std::string &&name, Entity *container,
+MethodBase::MethodBase(std::string &&name, Entity *container, iotypes::ValueType returnType,
     std::vector<iotypes::ValueType> &&paramTypes) :
   m_name(std::move(name)),
   m_container(container),
+  m_returnType(returnType),
   m_paramTypes(std::move(paramTypes)) {
   if (container) {
     container->m_methods.emplace(std::piecewise_construct,
@@ -18,7 +19,7 @@ MethodBase::MethodBase(std::string &&name, Entity *container,
 }
 
 std::string MethodBase::str() const {
-  std::string ret = m_name + '(';
+  std::string ret = m_returnType.str() + ' ' + m_name + '(';
   bool first = true;
   for (const iotypes::ValueType &vt : m_paramTypes) {
     if (first) {
