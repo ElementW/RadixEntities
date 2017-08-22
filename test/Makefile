@@ -1,10 +1,10 @@
 .PHONY: all
 
-CPPFLAGS += -std=c++14 -Wall -Wextra -I../include
+CPPFLAGS += -std=c++14 -Wall -Wextra -Werror -Wpedantic -Wno-missing-braces -I../include
 CPPFLAGS += -g
 
 LDFLAGS += -fPIC -pie
-CPPFLAGS += -fPIC -pie
+CPPFLAGS += -fPIC
 
 SRCS := ../src/iotypes/ValueType.cpp ../src/Entity.cpp ../src/Property.cpp ../src/Signal.cpp ../src/Method.cpp test.cpp
 OBJS := $(SRCS:.cpp=.o)
@@ -26,4 +26,4 @@ test: $(OBJS)
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm $(OBJS) test
+	rm -f $(OBJS) test

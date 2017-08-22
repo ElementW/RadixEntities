@@ -218,8 +218,11 @@ void testIotypesFourcc() {
 void testIotypesValueType() {
   using namespace radix::entity::iotypes;
   assert(getValueType<uint8_t>() == ValueType("std", "u8"));
+  assert(getValueType<int16_t>() == ValueType("std", "i16"));
   assert(getValueType<int32_t*>() == ValueType("std", "i32", ValueType::Pointer));
   assert(getValueType<const bool*>() == ValueType("std", "bool", ValueType::Pointer | ValueType::Const));
+  assert(getValueType<std::string>() == ValueType("std", "st8"));
+  std::cout << "int ValueType is " << getValueType<int>().str() << std::endl;
 }
 
 using VT = radix::entity::iotypes::ValueType;

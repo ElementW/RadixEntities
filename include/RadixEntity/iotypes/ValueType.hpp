@@ -31,8 +31,7 @@ constexpr std::array<char, 4> invfourcc(uint32_t i) {
   // { u32toc(i, 24), u32toc(i, 16), u32toc(i, 8), u32toc(i, 0) };
 }
 static inline std::string strfourcc(uint32_t i) {
-  char s[5] = {};
-  *reinterpret_cast<uint32_t*>(&s) = i;
+  const char s[] = { u32toc(i, 0), u32toc(i, 8), u32toc(i, 16), u32toc(i, 24), 0 };
   return std::string(s);
 }
 
